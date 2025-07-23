@@ -41,8 +41,14 @@ export GEMINI_API_KEY=your_api_key_here
 # Build the Docker image
 ./mvnw spring-boot:build-image 
 
-# Run the container
+# Run the container with default model (gemini-1.5-flash)
 docker run -d --name gemini-mcp -p 8811:8811 -e GEMINI_API_KEY=$GEMINI_API_KEY gemini-mcp:0.0.1-SNAPSHOT
+
+# Or specify a different Gemini model
+docker run -d --name gemini-mcp -p 8811:8811 \
+  -e GEMINI_API_KEY=$GEMINI_API_KEY \
+  -e GEMINI_MODEL=gemini-1.5-pro \
+  gemini-mcp:0.0.1-SNAPSHOT
 ```
 
 #### Option B: Local Development
@@ -98,10 +104,25 @@ Please use ask_gemini to explain quantum computing in simple terms
 Can you ask_gemini what the weather is like today?
 ```
 
-## Configuration Files
+## Configuration
+
+### Available Models
+
+You can configure which Gemini model to use by setting the `GEMINI_MODEL` environment variable:
+
+- `gemini-1.5-flash` (default) - Fast responses, good for most tasks
+- `gemini-1.5-pro` - More capable, better for complex tasks
+- `gemini-1.0-pro` - Original Gemini model
+
+### Environment Variables
+
+- `GEMINI_API_KEY` (required): Your Google Gemini API key
+- `GEMINI_MODEL` (optional): Gemini model to use (defaults to `gemini-1.5-flash`)
+
+### Configuration Files
 
 - `claude-desktop-mcp.json`: Example MCP server configuration
-- `application.properties`: Spring Boot configuration
+- `application.properties`: Spring Boot configuration with default model
 - `mcp-bridge.js`: Node.js MCP protocol bridge
 
 ## Troubleshooting

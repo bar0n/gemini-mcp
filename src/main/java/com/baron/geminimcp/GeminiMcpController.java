@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +19,12 @@ import org.springframework.web.client.RestTemplate;
 public class GeminiMcpController {
     private static final Logger logger = LoggerFactory.getLogger(GeminiMcpController.class);
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s";
+    private static final String GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s";
     private static final String API_KEY = System.getenv("GEMINI_API_KEY");
+    
+    @Value("${gemini.model:gemini-1.5-flash}")
+    private String geminiModel;
+    
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -59,7 +64,8 @@ public class GeminiMcpController {
                 query = rawRequest;
             }
         }
-        String url = String.format(GEMINI_API_URL, API_KEY);
+        String url = String.format(GEMINI_API_BASE_URL, geminiModel, API_KEY);
+        logger.info("Using Gemini model: {}", geminiModel);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
